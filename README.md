@@ -1,6 +1,12 @@
 # active_record_query_fixer
 
-A library for automatically added `.select` on a column used for `.distinct` or automatically adding `.group` for a column used for order.
+A library for automatically adding `.select` on a column used for `.distinct` or automatically adding `.group` for a column used for order.
+
+## Usage
+
+```ruby
+query = ActiveRecordQueryFixer.fix(query)
+```
 
 ## Contributing to active_record_query_fixer
 
