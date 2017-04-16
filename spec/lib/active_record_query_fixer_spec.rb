@@ -23,7 +23,9 @@ describe ActiveRecordQueryFixer do
       expect(query.to_sql).to eq 'SELECT "users".* FROM "users" INNER JOIN "roles" ON "roles"."user_id" = "users"."id"' \
         " GROUP BY users.id, roles.role HAVING (COUNT(roles.id) > 0) ORDER BY roles.role"
     end
+  end
 
+  describe "#fix_order_select_distinct" do
     it "fixes the missing select when query is distinct" do
       query = User.joins(:roles)
         .order("roles.role")
@@ -36,7 +38,34 @@ describe ActiveRecordQueryFixer do
         .query
 
       expect(query.to_a).to eq [user_1, user_2]
-      expect(query.to_sql).to eq 'SELECT DISTINCT roles.role, users.* FROM "users" INNER JOIN "roles" ON "roles"."user_id" = "users"."id" ORDER BY roles.role'
+      expect(query.to_sql).to eq 'SELECT DISTINCT roles.role AS active_record_query_fixer_0, users.* FROM "users" ' \
+        'INNER JOIN "roles" ON "roles"."user_id" = "users"."id" ORDER BY roles.role'
+    end
+  end
+
+  describe "#fix_order_group?" do
+    it "returns false when a distinct is present" do
+      query = User.joins(:roles)
+        .having("COUNT(roles.id) > 0")
+        .order("roles.role")
+        .distinct
+
+      fixer = ActiveRecordQueryFixer.new(query: query)
+
+      expect(fixer.__send__(:fix_order_group?)).to eq false
+    end
+  end
+
+  describe "#fix_order_select_distinct?" do
+    it "returns false when a distinct is present" do
+      query = User.joins(:roles)
+        .having("COUNT(roles.id) > 0")
+        .order("roles.role")
+        .distinct
+
+      fixer = ActiveRecordQueryFixer.new(query: query)
+
+      expect(fixer.__send__(:fix_order_select_distinct?)).to eq true
     end
   end
 end
