@@ -1,4 +1,6 @@
 class ActiveRecordQueryFixer
+  autoload :RelationExtentions, "#{__dir__}/active_record_query_fixer/relation_extentions"
+
   attr_reader :query
 
   def self.fix(query)
@@ -62,3 +64,5 @@ private
     @query.values[:distinct].present?
   end
 end
+
+ActiveRecord::Relation.include ActiveRecordQueryFixer::RelationExtentions

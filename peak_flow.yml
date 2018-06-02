@@ -1,4 +1,5 @@
-script:
+before_script:
   - bundle exec rake db:schema:load RAILS_ENV=test
+script:
   - bundle exec rspec
   - bundle exec rake best_practice_project:run
