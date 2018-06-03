@@ -1,4 +1,6 @@
 class ActiveRecordQueryFixer
+  autoload :RelationExtentions, "#{__dir__}/active_record_query_fixer/relation_extentions"
+
   attr_reader :query
 
   def self.fix(query)
@@ -19,7 +21,7 @@ class ActiveRecordQueryFixer
   def fix_order_group
     @query = @query.group("#{@query.model.table_name}.#{@query.model.primary_key}")
 
-    @query.values[:order].each do |order|
+    @query&.values[:order]&.each do |order|
       @query = @query.group(extract_table_and_column_from_expression(order))
     end
 
@@ -28,7 +30,7 @@ class ActiveRecordQueryFixer
 
   def fix_order_select_distinct
     changed = false
-    @query.values[:order].each do |order|
+    @query&.values[:order]&.each do |order|
       @query = @query.select("#{extract_table_and_column_from_expression(order)} AS active_record_query_fixer_#{@count_select}")
       changed = true
       @count_select += 1
@@ -55,10 +57,12 @@ private
   end
 
   def fix_order_group?
-    @query.values[:joins].blank? && @query.values[:distinct].present?
+    @query&.values[:joins]&.blank? && @query&.values[:distinct]&.present?
   end
 
   def fix_order_select_distinct?
-    @query.values[:distinct].present?
+    @query&.values[:distinct]&.present?
   end
 end
+
+ActiveRecord::Relation.include ActiveRecordQueryFixer::RelationExtentions
