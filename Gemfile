@@ -8,12 +8,12 @@ gemspec
 group :development, :test do
   gem "best_practice_project", "0.0.10", require: false
   gem "database_cleaner", "1.5.3"
-  gem "factory_girl_rails", "4.8.0"
+  gem "factory_bot_rails"
   gem "pg", "0.20.0"
   gem "pry-rails", "0.3.6"
   gem "rails", "5.0.2"
   gem "rspec-rails", "3.5.2"
-  gem "rubocop", "0.48.1"
+  gem "rubocop"
 end
 
 # Declare any dependencies that are still in development here instead of in
