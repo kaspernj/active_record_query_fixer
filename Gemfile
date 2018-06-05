@@ -13,7 +13,7 @@ group :development, :test do
   gem "pry-rails", "0.3.6"
   gem "rails", "5.0.2"
   gem "rspec-rails", "3.5.2"
-  gem "rubocop", "0.48.1"
+  gem "rubocop"
 end
 
 # Declare any dependencies that are still in development here instead of in
