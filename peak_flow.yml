@@ -1,4 +1,5 @@
 before_script:
+  - cp spec/dummy/config/database.peak_flow.yml spec/dummy/config/database.yml
   - cd spec/dummy && bundle exec rake db:create db:schema:load RAILS_ENV=test && cd ..
 script:
   - bundle exec rspec
