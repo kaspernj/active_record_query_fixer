@@ -54,6 +54,14 @@ describe ActiveRecordQueryFixer do
 
       expect(fixer.__send__(:fix_order_group?)).to eq false
     end
+
+    it "returns true when an order and a group is present" do
+      query = User.joins(:roles).group(:id).order("roles.role")
+
+      fixer = ActiveRecordQueryFixer.new(query: query)
+
+      expect(fixer.__send__(:fix_order_group?)).to eq true
+    end
   end
 
   describe "#fix_order_select_distinct?" do
