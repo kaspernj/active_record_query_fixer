@@ -13,6 +13,7 @@ class ActiveRecordQueryFixer
   end
 
   def fix
+    fix_reference_group if fix_reference_group?
     fix_order_group if fix_order_group?
     fix_order_select_distinct if fix_order_select_distinct?
     self
@@ -40,6 +41,14 @@ class ActiveRecordQueryFixer
     self
   end
 
+  def fix_reference_group
+    @query = @query.group(@query.model.arel_table[@query.model.primary_key])
+
+    @query.values[:references].each do |reference|
+      @query = @query.group("#{reference}.id")
+    end
+  end
+
 private
 
   def extract_table_and_column_from_expression(order)
@@ -63,6 +72,10 @@ private
 
   def fix_order_select_distinct?
     @query.values[:distinct].present? && @query.values[:order].present?
+  end
+
+  def fix_reference_group?
+    @query.values[:references].present? && @query.values[:group].present?
   end
 end
 

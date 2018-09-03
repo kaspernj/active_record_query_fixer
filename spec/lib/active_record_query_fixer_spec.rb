@@ -76,4 +76,14 @@ describe ActiveRecordQueryFixer do
       expect(fixer.__send__(:fix_order_select_distinct?)).to eq true
     end
   end
+
+  describe "#fix_select_group" do
+    it "fixes queries" do
+      query = User.includes(:roles).references(:roles).group(:id)
+
+      expect { query.to_a }.to raise_error(ActiveRecord::StatementInvalid)
+      expect(query.fix.to_a).to include user_1
+      expect(query.fix.to_a).to include user_2
+    end
+  end
 end
