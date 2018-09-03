@@ -21,7 +21,7 @@ describe ActiveRecordQueryFixer do
 
       expect(query.to_a).to eq [user_1, user_2]
       expect(query.to_sql).to eq 'SELECT "users".* FROM "users" INNER JOIN "roles" ON "roles"."user_id" = "users"."id"' \
-        " GROUP BY users.id, roles.role HAVING (COUNT(roles.id) > 0) ORDER BY roles.role"
+        ' GROUP BY "users"."id", roles.role HAVING (COUNT(roles.id) > 0) ORDER BY roles.role'
     end
   end
 
@@ -74,6 +74,16 @@ describe ActiveRecordQueryFixer do
       fixer = ActiveRecordQueryFixer.new(query: query)
 
       expect(fixer.__send__(:fix_order_select_distinct?)).to eq true
+    end
+  end
+
+  describe "#fix_select_group" do
+    it "fixes queries" do
+      query = User.includes(:roles).references(:roles).group(:id)
+
+      expect { query.to_a }.to raise_error(ActiveRecord::StatementInvalid)
+      expect(query.fix.to_a).to include user_1
+      expect(query.fix.to_a).to include user_2
     end
   end
 end
