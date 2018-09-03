@@ -20,7 +20,7 @@ class ActiveRecordQueryFixer
   end
 
   def fix_order_group
-    @query = @query.group("#{@query.model.table_name}.#{@query.model.primary_key}")
+    @query = @query.group(@query.model.arel_table[@query.model.primary_key])
 
     @query.values[:order]&.each do |order|
       @query = @query.group(extract_table_and_column_from_expression(order))
