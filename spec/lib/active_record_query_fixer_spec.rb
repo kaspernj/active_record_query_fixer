@@ -23,6 +23,26 @@ describe ActiveRecordQueryFixer do
       expect(query.to_sql).to eq 'SELECT "users".* FROM "users" INNER JOIN "roles" ON "roles"."user_id" = "users"."id"' \
         ' GROUP BY "users"."id", roles.role HAVING (COUNT(roles.id) > 0) ORDER BY roles.role'
     end
+
+    it "doesnt try to group by sum" do
+      query = User.group(:id).order("SuM(id)")
+
+      query = ActiveRecordQueryFixer.new(query: query)
+        .fix_order_group
+        .query
+
+      expect(query).to eq [user_1, user_2]
+    end
+
+    it "doesnt try to group by count" do
+      query = User.group(:id).order("CoUnT(users.id), users.id")
+
+      query = ActiveRecordQueryFixer.new(query: query)
+        .fix_order_group
+        .query
+
+      expect(query).to eq [user_1, user_2]
+    end
   end
 
   describe "#fix_order_select_distinct" do

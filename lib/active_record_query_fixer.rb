@@ -23,7 +23,7 @@ class ActiveRecordQueryFixer
     @query = @query.group(@query.model.arel_table[@query.model.primary_key])
 
     @query.values[:order]&.each do |order|
-      @query = @query.group(extract_table_and_column_from_expression(order))
+      @query = @query.group(extract_table_and_column_from_expression(order)) if group_by_order?(order)
     end
 
     self
@@ -76,6 +76,10 @@ private
 
   def fix_reference_group?
     @query.values[:references].present? && @query.values[:group].present?
+  end
+
+  def group_by_order?(order)
+    !order.match?(/\A\s*(COUNT|SUM)\(/i)
   end
 end
 
