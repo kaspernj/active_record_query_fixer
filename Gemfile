@@ -7,7 +7,7 @@ gemspec
 
 group :development, :test do
   gem "best_practice_project", "0.0.10", require: false
-  gem "database_cleaner", "1.5.3"
+  gem "database_cleaner", "1.7.0"
   gem "factory_bot_rails"
   gem "pg", "0.20.0"
   gem "pry-rails", "0.3.9"
