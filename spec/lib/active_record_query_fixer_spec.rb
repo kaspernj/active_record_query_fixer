@@ -43,6 +43,15 @@ describe ActiveRecordQueryFixer do
 
       expect(query).to eq [user_1, user_2]
     end
+
+    it "doesnt try to match arel objects" do
+      query = User.order(User.arel_table[:id].asc)
+      query = ActiveRecordQueryFixer.new(query: query)
+        .fix_order_group
+        .query
+
+      expect(query).to eq [user_1, user_2]
+    end
   end
 
   describe "#fix_order_select_distinct" do
