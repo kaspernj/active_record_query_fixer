@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    active_record_query_fixer (0.0.6)
+    active_record_query_fixer (0.0.7)
 
 GEM
   remote: https://rubygems.org/
@@ -172,4 +172,4 @@ DEPENDENCIES
   rubocop
 
 BUNDLED WITH
-   1.16.2
+   1.17.3
