@@ -79,7 +79,7 @@ private
   end
 
   def group_by_order?(order)
-    !order.match?(/\A\s*(COUNT|SUM)\(/i)
+    order.is_a?(String) && !order.match?(/\A\s*(COUNT|SUM)\(/i)
   end
 end
 
