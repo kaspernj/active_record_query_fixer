@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :role do
     user
-    role "administrator"
+    role { "administrator" }
   end
 end
