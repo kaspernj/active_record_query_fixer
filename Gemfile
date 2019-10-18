@@ -14,6 +14,7 @@ group :development, :test do
   gem "rails", "5.0.2"
   gem "rspec-rails", "3.9.0"
   gem "rubocop"
+  gem "tzinfo-data"
 end
 
 # Declare any dependencies that are still in development here instead of in
