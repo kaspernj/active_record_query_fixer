@@ -12,7 +12,7 @@ group :development, :test do
   gem "pg", "0.20.0"
   gem "pry-rails", "0.3.9"
   gem "rails", "5.0.2"
-  gem "rspec-rails", "3.5.2"
+  gem "rspec-rails", "3.9.0"
   gem "rubocop"
 end
 
