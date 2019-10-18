@@ -6,13 +6,13 @@ source "https://rubygems.org"
 gemspec
 
 group :development, :test do
-  gem "best_practice_project", "0.0.10", require: false
-  gem "database_cleaner", "1.7.0"
+  gem "best_practice_project", require: false
+  gem "database_cleaner"
   gem "factory_bot_rails"
-  gem "pg", "1.1.4"
-  gem "pry-rails", "0.3.9"
-  gem "rails", "5.0.2"
-  gem "rspec-rails", "3.9.0"
+  gem "pg"
+  gem "pry-rails"
+  gem "rails", ">= 5.0.2"
+  gem "rspec-rails"
   gem "rubocop"
   gem "tzinfo-data"
 end
