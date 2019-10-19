@@ -23,7 +23,7 @@ class ActiveRecordQueryFixer
     @query = @query.group(@query.model.arel_table[@query.model.primary_key])
 
     @query.values[:order]&.each do |order|
-      @query = @query.group(extract_table_and_column_from_expression(order)) if group_by_order?(order)
+      @query = @query.group(extract_table_and_column_from_expression(order)) if group_by_order?(order) || @query.values[:distinct]
     end
 
     self
@@ -38,6 +38,7 @@ class ActiveRecordQueryFixer
     end
 
     @query = @query.select("#{@query.table_name}.*") if changed
+
     self
   end
 
@@ -47,6 +48,8 @@ class ActiveRecordQueryFixer
     @query.values[:references].each do |reference|
       @query = @query.group("#{reference}.id")
     end
+
+    self
   end
 
 private
