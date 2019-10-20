@@ -62,6 +62,11 @@ describe ActiveRecordQueryFixer do
 
       expect(query).to eq [user_1, user_2]
     end
+
+    it "doesnt crash when joins and distinct without an order" do
+      query = User.distinct.fix
+      expect(query.to_sql).to eq "SELECT DISTINCT \"users\".* FROM \"users\""
+    end
   end
 
   describe "#fix_order_select_distinct" do
