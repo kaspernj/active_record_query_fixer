@@ -1,3 +1,6 @@
+require "dig_bang"
+require "pg_query"
+
 class ActiveRecordQueryFixer
   autoload :RelationExtentions, "#{__dir__}/active_record_query_fixer/relation_extentions"
 
@@ -16,18 +19,12 @@ class ActiveRecordQueryFixer
     fix_reference_group if fix_reference_group?
     fix_order_group if fix_order_group?
     fix_order_select_distinct if fix_order_select_distinct?
-    fix_distinct_group_select if @query.values[:distinct] && @query.values[:group] && @query.values[:select]
+    fix_select_group if @query.values[:select] && @query.values[:group]
 
     self
   end
 
-  def fix_distinct_group_select
-    require "dig_bang"
-    require "pg_query"
-
-    parsed_query = PgQuery.parse(@query.to_sql)
-    select_targets = parsed_query.tree.dig!(0, "RawStmt", "stmt", "SelectStmt", "targetList")
-
+  def fix_select_group
     select_targets.each do |select_target|
       fields = select_target.dig!("ResTarget", "val", "ColumnRef", "fields")
       next if fields.length != 2
@@ -50,8 +47,14 @@ class ActiveRecordQueryFixer
   def fix_order_group
     @query = @query.group(@query.model.arel_table[@query.model.primary_key])
 
-    @query.values[:order]&.each do |order|
-      @query = @query.group(extract_table_and_column_from_expression(order)) if group_by_order?(order)
+    sort_targets.each do |sort_target|
+      fields = sort_target.dig("SortBy", "node", "ColumnRef", "fields")
+      next if !fields || fields.length != 2
+
+      table = fields.dig(0, "String", "str")
+      column = fields.dig(1, "String", "str")
+
+      @query = @query.group("#{table}.#{column}") if table && column
     end
 
     self
@@ -59,10 +62,19 @@ class ActiveRecordQueryFixer
 
   def fix_order_select_distinct
     changed = false
-    @query.values[:order]&.each do |order|
-      @query = @query.select("#{extract_table_and_column_from_expression(order)} AS active_record_query_fixer_#{@count_select}")
-      changed = true
-      @count_select += 1
+
+    sort_targets.each do |sort_target|
+      fields = sort_target.dig("SortBy", "node", "ColumnRef", "fields")
+      next if !fields || fields.length != 2
+
+      table = fields.dig(0, "String", "str")
+      column = fields.dig(1, "String", "str")
+
+      if table && column
+        @query = @query.select("#{table}.#{column} AS active_record_query_fixer_#{@count_select}")
+        changed = true
+        @count_select += 1
+      end
     end
 
     @query = @query.select("#{@query.table_name}.*") if changed
@@ -82,20 +94,6 @@ class ActiveRecordQueryFixer
 
 private
 
-  def extract_table_and_column_from_expression(order)
-    if order.is_a?(Arel::Nodes::Ascending) || order.is_a?(Arel::Nodes::Descending)
-      if order.expr.relation.respond_to?(:right)
-        "#{order.expr.relation.right}.#{order.expr.name}"
-      else
-        "#{order.expr.relation.table_name}.#{order.expr.name}"
-      end
-    elsif order.is_a?(String)
-      order
-    else
-      raise "Couldn't extract table and column from: #{order}"
-    end
-  end
-
   def fix_order_group?
     @query.values[:joins].blank? && @query.values[:distinct].present? ||
       @query.values[:group].present? && @query.values[:order].present?
@@ -109,8 +107,16 @@ private
     @query.values[:references].present? && @query.values[:group].present?
   end
 
-  def group_by_order?(order)
-    order.is_a?(String) && !order.match?(/\A\s*(COUNT|SUM)\(/i)
+  def parsed_query
+    @parsed_query ||= PgQuery.parse(@query.to_sql)
+  end
+
+  def select_targets
+    @select_targets ||= parsed_query.tree.dig!(0, "RawStmt", "stmt", "SelectStmt", "targetList")
+  end
+
+  def sort_targets
+    @sort_targets ||= parsed_query.tree.dig!(0, "RawStmt", "stmt", "SelectStmt", "sortClause")
   end
 end
 
