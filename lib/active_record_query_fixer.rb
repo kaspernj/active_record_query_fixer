@@ -70,11 +70,11 @@ class ActiveRecordQueryFixer
       table = fields.dig(0, "String", "str")
       column = fields.dig(1, "String", "str")
 
-      if table && column
-        @query = @query.select("#{table}.#{column} AS active_record_query_fixer_#{@count_select}")
-        changed = true
-        @count_select += 1
-      end
+      next if !table || !column
+
+      @query = @query.select("#{table}.#{column} AS active_record_query_fixer_#{@count_select}")
+      changed = true
+      @count_select += 1
     end
 
     @query = @query.select("#{@query.table_name}.*") if changed
