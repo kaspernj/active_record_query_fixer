@@ -14,6 +14,9 @@ group :development, :test do
   gem "rails", ">= 5.0.2"
   gem "rspec-rails"
   gem "rubocop"
+  gem "rubocop-performance"
+  gem "rubocop-rails"
+  gem "rubocop-rspec"
   gem "tzinfo-data"
 end
 

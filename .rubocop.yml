@@ -6,13 +6,24 @@ AllCops:
     - db/schema.rb
     - node_modules/**/*
     - spec/dummy/db/schema.rb
-    - active_record_query_fixer.gemspec:1
+    - active_record_query_fixer.gemspec
+
+require:
+  - rubocop-performance
+  - rubocop-rails
+  - rubocop-rspec
 
 Layout/AccessModifierIndentation:
   EnforcedStyle: outdent
 
 Layout/AlignParameters:
   EnforcedStyle: with_fixed_indentation
+
+Layout/AlignArguments:
+  EnforcedStyle: with_fixed_indentation
+
+Layout/CaseIndentation:
+  EnforcedStyle: end
 
 Layout/EmptyLines:
   Enabled: false
@@ -50,8 +61,41 @@ Metrics/LineLength:
 Metrics/MethodLength:
   Max: 50
 
+Metrics/PerceivedComplexity:
+  Max: 10
+
 # .find_each is not the same as .each
 Rails/FindEach:
+  Enabled: false
+
+RSpec/AnyInstance:
+  Enabled: false
+
+RSpec/ContextWording:
+  Enabled: false
+
+RSpec/DescribeClass:
+  Enabled: false
+
+RSpec/DescribedClass:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/LetSetup:
+  Enabled: false
+
+RSpec/MessageSpies:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/NamedSubject:
+  Enabled: false
+
+RSpec/NestedGroups:
   Enabled: false
 
 Style/ClassAndModuleChildren:
@@ -70,7 +114,13 @@ Style/FrozenStringLiteralComment:
 Style/GuardClause:
   Enabled: false
 
+Style/Lambda:
+  Enabled: false
+
 Style/LambdaCall:
+  Enabled: false
+
+Style/MultipleComparison:
   Enabled: false
 
 Style/RegexpLiteral:
@@ -94,3 +144,6 @@ Style/SymbolArray:
 Style/TrivialAccessors:
   ExactNameMatch: true
   Enabled: true
+
+Style/WordArray:
+  Enabled: false

@@ -62,15 +62,15 @@ RSpec.configure do |config|
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
 
-  config.before(:suite) do
+  config.before do
     DatabaseCleaner.clean_with(:truncation)
   end
 
-  config.before(:each) do
+  config.before do
     DatabaseCleaner.strategy = :truncation
   end
 
-  config.after(:each) do
+  config.after do
     DatabaseCleaner.clean
   end
 end
