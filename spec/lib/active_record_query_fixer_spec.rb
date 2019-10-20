@@ -24,6 +24,18 @@ describe ActiveRecordQueryFixer do
         ' GROUP BY "users"."id", roles.role HAVING (COUNT(roles.id) > 0) ORDER BY roles.role'
     end
 
+    it "groups by selected attributes if distinct" do
+      query = User.select("roles.id AS role_id, users.*").joins(:roles).order(:id).group("roles.role").distinct
+
+      expect { query.to_a }.to raise_error(ActiveRecord::StatementInvalid)
+
+      query = ActiveRecordQueryFixer.new(query: query)
+        .fix_distinct_group_select
+        .query
+
+      expect(query.to_a).to eq [user_1, user_2]
+    end
+
     it "doesnt try to group by sum" do
       query = User.group(:id).order("SuM(id)")
 
