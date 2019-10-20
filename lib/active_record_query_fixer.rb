@@ -95,7 +95,7 @@ class ActiveRecordQueryFixer
 private
 
   def fix_order_group?
-    @query.values[:joins].blank? && @query.values[:distinct].present? ||
+    @query.values[:joins].blank? && @query.values[:distinct].present? && @query.values[:order].present? ||
       @query.values[:group].present? && @query.values[:order].present?
   end
 
@@ -111,11 +111,17 @@ private
     @parsed_query ||= PgQuery.parse(@query.to_sql)
   end
 
+  def select_statement
+    @select_statement ||= parsed_query.tree.dig!(0, "RawStmt", "stmt", "SelectStmt")
+  end
+
   def select_targets
-    @select_targets ||= parsed_query.tree.dig!(0, "RawStmt", "stmt", "SelectStmt", "targetList")
+    @select_targets ||= select_statement.fetch("targetList")
   end
 
   def sort_targets
+    return [] unless select_statement.key?("sortClause")
+
     @sort_targets ||= parsed_query.tree.dig!(0, "RawStmt", "stmt", "SelectStmt", "sortClause")
   end
 end
