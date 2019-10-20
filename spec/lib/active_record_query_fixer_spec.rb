@@ -24,14 +24,12 @@ describe ActiveRecordQueryFixer do
         ' GROUP BY "users"."id", roles.role HAVING (COUNT(roles.id) > 0) ORDER BY roles.role'
     end
 
-    it "groups by selected attributes if distinct" do
-      query = User.select("roles.id AS role_id, users.*").joins(:roles).order(:id).group("roles.role").distinct
+    it "works with orders given as an arel object" do
+      query = User.joins(:roles).group(:id).order(Role.arel_table[:role]).order("roles.id")
 
       expect { query.to_a }.to raise_error(ActiveRecord::StatementInvalid)
 
-      query = ActiveRecordQueryFixer.new(query: query)
-        .fix_distinct_group_select
-        .query
+      query = query.fix
 
       expect(query.to_a).to eq [user_1, user_2]
     end
@@ -115,6 +113,20 @@ describe ActiveRecordQueryFixer do
       fixer = ActiveRecordQueryFixer.new(query: query)
 
       expect(fixer.__send__(:fix_order_select_distinct?)).to eq true
+    end
+  end
+
+  describe "#fix_select_group" do
+    it "groups by selected attributes if distinct" do
+      query = User.select("roles.id AS role_id, users.*").joins(:roles).order(:id).group("roles.role")
+
+      expect { query.to_a }.to raise_error(ActiveRecord::StatementInvalid)
+
+      query = ActiveRecordQueryFixer.new(query: query)
+        .fix
+        .query
+
+      expect(query.to_a).to eq [user_1, user_2]
     end
   end
 
