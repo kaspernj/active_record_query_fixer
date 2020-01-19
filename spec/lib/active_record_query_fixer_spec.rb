@@ -85,6 +85,22 @@ describe ActiveRecordQueryFixer do
       expect(query.to_sql).to eq 'SELECT DISTINCT roles.role AS active_record_query_fixer_0, users.* FROM "users" ' \
         'INNER JOIN "roles" ON "roles"."user_id" = "users"."id" ORDER BY roles.role'
     end
+
+    it "doesnt select all columns if something else has been selected" do
+      query = User.joins(:roles)
+        .select("users.email")
+        .order("roles.role")
+        .distinct
+
+      expect { query.to_a }.to raise_error(ActiveRecord::StatementInvalid)
+
+      query = ActiveRecordQueryFixer.new(query: query)
+        .fix_order_select_distinct
+        .query
+
+      expect(query.to_sql).to eq 'SELECT DISTINCT users.email, roles.role AS active_record_query_fixer_0 FROM "users" ' \
+        'INNER JOIN "roles" ON "roles"."user_id" = "users"."id" ORDER BY roles.role'
+    end
   end
 
   describe "#fix_order_group?" do
