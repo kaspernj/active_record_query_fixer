@@ -62,6 +62,7 @@ class ActiveRecordQueryFixer
 
   def fix_order_select_distinct
     changed = false
+    select_defined = @query.values[:select].present?
 
     sort_targets.each do |sort_target|
       fields = sort_target.dig("SortBy", "node", "ColumnRef", "fields")
@@ -77,7 +78,7 @@ class ActiveRecordQueryFixer
       @count_select += 1
     end
 
-    @query = @query.select("#{@query.table_name}.*") if changed
+    @query = @query.select("#{@query.table_name}.*") if changed && !select_defined
 
     self
   end
