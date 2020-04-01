@@ -46,6 +46,12 @@ Layout/ParameterAlignment:
 Layout/SpaceInsideHashLiteralBraces:
   EnforcedStyle: no_space
 
+Lint/RaiseException:
+  Enabled: true
+
+Lint/StructNewOverride:
+  Enabled: true
+
 Metrics/AbcSize:
   Max: 25
 
@@ -113,6 +119,15 @@ Style/FrozenStringLiteralComment:
 # Will report offences for many places that are much more readable without using a guard clause
 Style/GuardClause:
   Enabled: false
+
+Style/HashEachMethods:
+  Enabled: true
+
+Style/HashTransformKeys:
+  Enabled: true
+
+Style/HashTransformValues:
+  Enabled: true
 
 Style/Lambda:
   Enabled: false
