@@ -149,9 +149,7 @@ describe ActiveRecordQueryFixer do
 
       expect(query.to_a).to eq [user_1, user_2]
     end
-  end
 
-  describe "#fix_select_group" do
     it "fixes queries" do
       query = User.includes(:roles).references(:roles).group(:id)
 
