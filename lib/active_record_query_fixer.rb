@@ -77,7 +77,7 @@ class ActiveRecordQueryFixer
     end
 
     # Start by prepending a wild-card select before doing the fix-selects to avoid any issues with `DISTINCT COUNT`
-    @query = prepend_table_wildcard(query) if !table_wildcard_prepended? && select_appends.any?
+    @query = prepend_table_wildcard(query) if !table_wildcard_prepended? && select_appends.empty?
 
     select_appends.each do |select_append|
       @query = query.select(select_append)
@@ -130,7 +130,7 @@ private
   end
 
   def select_table_wildcard_sql
-    @select_table_wildcard_sql ||= "#{@table_name}.*"
+    @select_table_wildcard_sql ||= "#{query.table_name}.*"
   end
 
   def table_wildcard_prepended?
