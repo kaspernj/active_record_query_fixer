@@ -82,7 +82,7 @@ describe ActiveRecordQueryFixer do
         .query
 
       expect(query.to_a).to eq [user_1, user_2]
-      expect(query.to_sql).to eq 'SELECT DISTINCT roles.role AS active_record_query_fixer_0, users.* FROM "users" ' \
+      expect(query.to_sql).to eq 'SELECT DISTINCT users.*, roles.role AS active_record_query_fixer_0 FROM "users" ' \
         'INNER JOIN "roles" ON "roles"."user_id" = "users"."id" ORDER BY roles.role'
     end
 
