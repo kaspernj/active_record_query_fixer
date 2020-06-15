@@ -77,7 +77,7 @@ class ActiveRecordQueryFixer
     end
 
     # Start by prepending a wild-card select before doing the fix-selects to avoid any issues with `DISTINCT COUNT`
-    prepend_table_wildcard if !table_wildcard_prepended? && select_appends.any? && no_existing_selects?
+    prepend_table_wildcard if !table_wildcard_prepended? && select_appends.any? && query.values[:select].blank?
 
     select_appends.each do |select_append|
       @query = query.select(select_append)
@@ -109,10 +109,6 @@ private
 
   def fix_reference_group?
     query.values[:references].present? && query.values[:group].present?
-  end
-
-  def no_existing_selects?
-    !query.values[:select] || query.values[:select].empty?
   end
 
   def parsed_query
