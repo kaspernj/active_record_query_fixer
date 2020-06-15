@@ -133,7 +133,7 @@ private
     @select_table_wildcard_sql ||= "#{@table_name}.*"
   end
 
-  def table_wildcard_prepended?(query)
+  def table_wildcard_prepended?
     query.values[:select]&.first == select_table_wildcard_sql
   end
 
