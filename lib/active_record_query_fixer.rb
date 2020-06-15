@@ -116,7 +116,7 @@ private
   end
 
   # Prepends 'table_name.*' to the query. It needs to be pre-pended in case a `COUNT` or another aggregate function has been added to work with `DISTINCT`.
-  def prepend_table_wildcard(query)
+  def prepend_table_wildcard
     old_select = query.values[:select] || []
     old_select = old_select.keep_if { |select_statement| select_statement != select_table_wildcard_sql }
 
