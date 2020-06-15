@@ -77,7 +77,7 @@ class ActiveRecordQueryFixer
     end
 
     # Start by prepending a wild-card select before doing the fix-selects to avoid any issues with `DISTINCT COUNT`
-    @query = prepend_table_wildcard(query) if !table_wildcard_prepended? && select_appends.empty?
+    prepend_table_wildcard if !table_wildcard_prepended? && select_appends.any? && no_existing_selects?
 
     select_appends.each do |select_append|
       @query = query.select(select_append)
@@ -111,22 +111,24 @@ private
     query.values[:references].present? && query.values[:group].present?
   end
 
+  def no_existing_selects?
+    !query.values[:select] || query.values[:select].empty?
+  end
+
   def parsed_query
     @parsed_query ||= PgQuery.parse(query.to_sql)
   end
 
   # Prepends 'table_name.*' to the query. It needs to be pre-pended in case a `COUNT` or another aggregate function has been added to work with `DISTINCT`.
-  def prepend_table_wildcard(query)
-    old_select = query.values[:select] || []
+  def prepend_table_wildcard
+    old_select = query.values[:select]&.clone || []
     old_select = old_select.keep_if { |select_statement| select_statement != select_table_wildcard_sql }
 
-    query = query.except(:select).select(select_table_wildcard_sql)
+    @query = query.except(:select).select(select_table_wildcard_sql)
 
     old_select.each do |select_statement|
-      query = query.select(select_statement)
+      @query = query.select(select_statement)
     end
-
-    query
   end
 
   def select_table_wildcard_sql
