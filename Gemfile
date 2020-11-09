@@ -10,6 +10,7 @@ group :development, :test do
   gem "database_cleaner"
   gem "factory_bot_rails"
   gem "pg"
+  gem "pg_query"
   gem "pry-rails"
   gem "rails", ">= 5.0.2"
   gem "rspec-rails"

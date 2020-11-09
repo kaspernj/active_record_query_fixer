@@ -1,5 +1,4 @@
 require "dig_bang"
-require "pg_query"
 
 class ActiveRecordQueryFixer
   autoload :RelationExtentions, "#{__dir__}/active_record_query_fixer/relation_extentions"
@@ -112,6 +111,7 @@ private
   end
 
   def parsed_query
+    require "pg_query" unless defined?(PgQuery)
     @parsed_query ||= PgQuery.parse(query.to_sql)
   end
 

@@ -3,7 +3,6 @@ PATH
   specs:
     active_record_query_fixer (0.0.12)
       dig_bang
-      pg_query
 
 GEM
   remote: https://rubygems.org/
@@ -211,6 +210,7 @@ DEPENDENCIES
   database_cleaner
   factory_bot_rails
   pg
+  pg_query
   pry-rails
   rails (>= 5.0.2)
   rspec-rails
