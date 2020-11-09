@@ -17,5 +17,4 @@ Gem::Specification.new do |s|
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
 
   s.add_dependency "dig_bang"
-  s.add_dependency "pg_query"
 end
