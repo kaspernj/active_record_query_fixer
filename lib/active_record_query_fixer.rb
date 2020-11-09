@@ -111,7 +111,7 @@ private
   end
 
   def parsed_query
-    require "pg_query" unless const_defined?(PgQuery)
+    require "pg_query" unless defined?(PgQuery)
     @parsed_query ||= PgQuery.parse(query.to_sql)
   end
 
