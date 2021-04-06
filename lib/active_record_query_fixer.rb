@@ -12,8 +12,8 @@ class ActiveRecordQueryFixer
     new(query: query).fix.query
   end
 
-  def initialize(args)
-    @query = args.fetch(:query)
+  def initialize(query:)
+    @query = query
     @count_select = 0
   end
 
