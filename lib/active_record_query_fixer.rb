@@ -26,7 +26,7 @@ class ActiveRecordQueryFixer
     self
   end
 
-  def fix_select_group
+  def fix_select_group # rubocop:disable Metrics/AbcSize
     select_targets.each do |select_target|
       fields = select_target.res_target.val.column_ref.fields
       next if !fields || fields.length != 2
@@ -46,7 +46,7 @@ class ActiveRecordQueryFixer
     self
   end
 
-  def fix_order_group
+  def fix_order_group # rubocop:disable Metrics/AbcSize
     @query = query.group(query.model.arel_table[query.model.primary_key])
 
     sort_targets.each do |sort_target|
@@ -63,7 +63,7 @@ class ActiveRecordQueryFixer
     self
   end
 
-  def fix_order_select_distinct
+  def fix_order_select_distinct # rubocop:disable Metrics/AbcSize
     select_appends = []
 
     sort_targets.each do |sort_target|
