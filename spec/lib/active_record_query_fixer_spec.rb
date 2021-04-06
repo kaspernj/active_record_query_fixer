@@ -21,7 +21,7 @@ describe ActiveRecordQueryFixer do
 
       expect(query.to_a).to eq [user_1, user_2]
       expect(query.to_sql).to eq 'SELECT "users".* FROM "users" INNER JOIN "roles" ON "roles"."user_id" = "users"."id"' \
-        ' GROUP BY "users"."id", roles.role HAVING (COUNT(roles.id) > 0) ORDER BY roles.role'
+        ' GROUP BY "users"."id", "roles"."role" HAVING (COUNT(roles.id) > 0) ORDER BY roles.role'
     end
 
     it "works with orders given as an arel object" do
@@ -98,7 +98,7 @@ describe ActiveRecordQueryFixer do
         .fix_order_select_distinct
         .query
 
-      expect(query.to_sql).to eq 'SELECT DISTINCT users.email, roles.role AS active_record_query_fixer_0 FROM "users" ' \
+      expect(query.to_sql).to eq 'SELECT DISTINCT "users"."email", roles.role AS active_record_query_fixer_0 FROM "users" ' \
         'INNER JOIN "roles" ON "roles"."user_id" = "users"."id" ORDER BY roles.role'
     end
   end
