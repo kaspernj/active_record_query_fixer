@@ -3,7 +3,7 @@ require "dig_bang"
 class ActiveRecordQueryFixer
   autoload :RelationExtentions, "#{__dir__}/active_record_query_fixer/relation_extentions"
 
-  attr_reader :query
+  attr_reader :count_select, :query
 
   delegate :connection, to: :query
   delegate :quote_column_name, :quote_table_name, to: :connection
@@ -75,7 +75,7 @@ class ActiveRecordQueryFixer
 
       next if !table || !column
 
-      select_appends << "#{quote_table_name(table)}.#{quote_column_name(column)} AS active_record_query_fixer_#{@count_select}"
+      select_appends << "#{quote_table_name(table)}.#{quote_column_name(column)} AS active_record_query_fixer_#{count_select}"
 
       @count_select += 1
     end
