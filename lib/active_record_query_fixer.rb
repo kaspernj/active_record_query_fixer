@@ -3,17 +3,14 @@ require "dig_bang"
 class ActiveRecordQueryFixer
   autoload :RelationExtentions, "#{__dir__}/active_record_query_fixer/relation_extentions"
 
-  attr_reader :count_select, :query
-
-  delegate :connection, to: :query
-  delegate :quote_column_name, :quote_table_name, to: :connection
+  attr_reader :query
 
   def self.fix(query)
     new(query: query).fix.query
   end
 
-  def initialize(query:)
-    @query = query
+  def initialize(args)
+    @query = args.fetch(:query)
     @count_select = 0
   end
 
@@ -26,57 +23,55 @@ class ActiveRecordQueryFixer
     self
   end
 
-  def fix_select_group # rubocop:disable Metrics/AbcSize
+  def fix_select_group
     select_targets.each do |select_target|
-      fields = select_target.res_target.val.column_ref.fields
+      fields = select_target.dig!("ResTarget", "val").dig("ColumnRef", "fields")
       next if !fields || fields.length != 2
 
-      table = fields[0].string.str
-      column = fields[1].string&.str
+      table = fields[0].dig("String", "str")
+      column = fields[1].dig("String", "str")
 
       if column
         # A table and a column has been selected - make sure to group by that
-        @query = query.group("#{quote_table_name(table)}.#{quote_column_name(column)}")
-      elsif fields[1].a_star
+        @query = query.group("#{table}.#{column}")
+      elsif fields[1].key?("A_Star")
         # A table and a star has been selected - assume the primary key is called "id" and group by that
-        @query = query.group("#{quote_table_name(table)}.#{quote_column_name("id")}")
+        @query = query.group("#{table}.id")
       end
     end
 
     self
   end
 
-  def fix_order_group # rubocop:disable Metrics/AbcSize
+  def fix_order_group
     @query = query.group(query.model.arel_table[query.model.primary_key])
 
     sort_targets.each do |sort_target|
-      fields = sort_target.sort_by.node.column_ref&.fields
-
+      fields = sort_target.dig("SortBy", "node", "ColumnRef", "fields")
       next if !fields || fields.length != 2
 
-      table = fields[0].string.str
-      column = fields[1].string.str
+      table = fields.dig(0, "String", "str")
+      column = fields.dig(1, "String", "str")
 
-      @query = query.group("#{quote_table_name(table)}.#{quote_column_name(column)}") if table && column
+      @query = query.group("#{table}.#{column}") if table && column
     end
 
     self
   end
 
-  def fix_order_select_distinct # rubocop:disable Metrics/AbcSize
+  def fix_order_select_distinct
     select_appends = []
 
     sort_targets.each do |sort_target|
-      fields = sort_target.sort_by.node.column_ref.fields
+      fields = sort_target.dig("SortBy", "node", "ColumnRef", "fields")
       next if !fields || fields.length != 2
 
-      table = fields[0].string.str
-      column = fields[1].string.str
+      table = fields.dig(0, "String", "str")
+      column = fields.dig(1, "String", "str")
 
       next if !table || !column
 
-      select_appends << "#{quote_table_name(table)}.#{quote_column_name(column)} AS active_record_query_fixer_#{count_select}"
-
+      select_appends << "#{table}.#{column} AS active_record_query_fixer_#{@count_select}"
       @count_select += 1
     end
 
@@ -94,7 +89,7 @@ class ActiveRecordQueryFixer
     @query = query.group(query.model.arel_table[query.model.primary_key])
 
     query.values[:references].each do |reference|
-      @query = query.group("#{quote_table_name(reference)}.#{quote_column_name("id")}")
+      @query = query.group("#{reference}.id")
     end
 
     self
@@ -133,7 +128,7 @@ private
   end
 
   def select_table_wildcard_sql
-    @select_table_wildcard_sql ||= "#{quote_table_name(query.table_name)}.*"
+    @select_table_wildcard_sql ||= "#{query.table_name}.*"
   end
 
   def table_wildcard_prepended?
@@ -141,15 +136,17 @@ private
   end
 
   def select_statement
-    @select_statement ||= parsed_query.tree.stmts.fetch(0).stmt.select_stmt
+    @select_statement ||= parsed_query.tree.dig!(0, "RawStmt", "stmt", "SelectStmt")
   end
 
   def select_targets
-    @select_targets ||= select_statement.target_list
+    @select_targets ||= select_statement.fetch("targetList")
   end
 
   def sort_targets
-    @sort_targets ||= select_statement.sort_clause
+    return [] unless select_statement.key?("sortClause")
+
+    @sort_targets ||= parsed_query.tree.dig!(0, "RawStmt", "stmt", "SelectStmt", "sortClause")
   end
 end
 
