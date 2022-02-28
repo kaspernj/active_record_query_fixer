@@ -12,7 +12,6 @@ group :development, :test do
   gem "pg"
   gem "pg_query"
   gem "pry-rails"
-  gem "rails", ">= 5.0.2"
   gem "rspec-rails"
   gem "rubocop"
   gem "rubocop-performance"
