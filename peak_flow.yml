@@ -1,6 +1,7 @@
 before_script:
   - cp spec/dummy/config/database.peak_flow.yml spec/dummy/config/database.yml
-  - cd spec/dummy && bundle exec rake db:create db:environment:set db:schema:load RAILS_ENV=test && cd ..
+  - bundle exec appraisal bundle
+  - cd spec/dummy && bundle exec rails db:create db:environment:set db:schema:load
 rvm: true
 services:
   postgres:
@@ -11,6 +12,32 @@ services:
     expose:
       - 5432
     image: postgres:11.4
-script:
-  - bundle exec rspec
-  - bundle exec rake best_practice_project:run
+builds:
+  build_1:
+    environment:
+      RUBY_VERSION: 2.7.5
+    name: Ruby 2.7.5, Rails 6
+    script:
+      - bundle exec appraisal "rails 6" rspec
+  build_2:
+    environment:
+      RUBY_VERSION: 2.7.5
+    name: Ruby 2.7.5, Rails 7
+    script:
+      - bundle exec appraisal "rails 7" rspec
+  build_3:
+    environment:
+      RUBY_VERSION: 3.0.3
+    name: Ruby 3.0.3, Rails 6
+    script:
+      - bundle exec appraisal "rails 6" rspec
+  build_4:
+    environment:
+      RUBY_VERSION: 3.0.3
+    name: Ruby 3.0.3, Rails 7
+    script:
+      - bundle exec appraisal "rails 7" rspec
+  build_5:
+    name: Linters
+    script:
+      - bundle exec rake best_practice_project:run

@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.name        = "active_record_query_fixer"
   s.version     = ActiveRecordQueryFixer::VERSION
   s.authors     = ["kaspernj"]
-  s.email       = ["kaspernj@gmail.com"]
+  s.email       = ["k@spernj.org"]
   s.homepage    = "https://www.github.com/kaspernj/active_record_query_fixer"
   s.summary     = "A library for automatically added `.select` on a column used for `.distinct` or automatically adding `.group` for a column used for order."
   s.description = "A library for automatically added `.select` on a column used for `.distinct` or automatically adding `.group` for a column used for order."
@@ -17,4 +17,6 @@ Gem::Specification.new do |s|
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
 
   s.add_dependency "dig_bang"
+  s.add_development_dependency "appraisal"
+  s.add_development_dependency "rails", ">= 6.0.0"
 end
