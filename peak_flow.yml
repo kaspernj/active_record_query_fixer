@@ -1,6 +1,5 @@
 before_script:
   - cp spec/dummy/config/database.peak_flow.yml spec/dummy/config/database.yml
-  - bundle exec appraisal bundle
   - cd spec/dummy && bundle exec rails db:create db:environment:set db:schema:load
 rvm: true
 services:
