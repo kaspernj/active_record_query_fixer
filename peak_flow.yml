@@ -1,6 +1,5 @@
 before_script:
   - cp spec/dummy/config/database.peak_flow.yml spec/dummy/config/database.yml
-  - bundle exec appraisal bundle
   - cd spec/dummy && bundle exec rails db:create db:environment:set db:schema:load
 rvm: true
 services:
@@ -15,28 +14,32 @@ services:
 builds:
   build_1:
     environment:
-      RUBY_VERSION: 2.7.5
-    name: Ruby 2.7.5, Rails 6
+      BUNDLE_GEMFILE: /home/build/project/gemfiles/ruby_2_rails_6.gemfile
+      RUBY_VERSION: 2.7.8
+    name: Ruby 2.7.8, Rails 6
     script:
-      - bundle exec appraisal "rails 6" rspec
+      - bundle exec appraisal "ruby 2 rails 6" rspec
   build_2:
     environment:
-      RUBY_VERSION: 2.7.5
-    name: Ruby 2.7.5, Rails 7
+      BUNDLE_GEMFILE: /home/build/project/gemfiles/ruby_2_rails_7.gemfile
+      RUBY_VERSION: 2.7.8
+    name: Ruby 2.7.8, Rails 7
     script:
-      - bundle exec appraisal "rails 7" rspec
+      - bundle exec appraisal "ruby 2 rails 7" rspec
   build_3:
     environment:
-      RUBY_VERSION: 3.0.3
-    name: Ruby 3.0.3, Rails 6
+      BUNDLE_GEMFILE: /home/build/project/gemfiles/ruby_3_rails_6.gemfile
+      RUBY_VERSION: 3.2.2
+    name: Ruby 3.2.2, Rails 6
     script:
-      - bundle exec appraisal "rails 6" rspec
+      - bundle exec appraisal "ruby 3 rails 6" rspec
   build_4:
     environment:
-      RUBY_VERSION: 3.0.3
-    name: Ruby 3.0.3, Rails 7
+      BUNDLE_GEMFILE: /home/build/project/gemfiles/ruby_2_rails_7.gemfile
+      RUBY_VERSION: 3.2.2
+    name: Ruby 3.2.2, Rails 7
     script:
-      - bundle exec appraisal "rails 7" rspec
+      - bundle exec appraisal "ruby 3 rails 7" rspec
   build_5:
     name: Linters
     script:

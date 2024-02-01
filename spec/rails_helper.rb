@@ -25,6 +25,7 @@ require_relative "factories/users"
 #
 # Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 
+require "dig_bang"
 require "pg"
 
 # Checks for pending migration and applies them before tests are run.
@@ -35,7 +36,7 @@ RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
 
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
-  config.fixture_path = "#{::Rails.root}/spec/fixtures"
+  config.fixture_path = Rails.root.join("spec/fixtures").to_s
 
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false

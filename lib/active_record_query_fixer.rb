@@ -98,8 +98,8 @@ class ActiveRecordQueryFixer
 private
 
   def fix_order_group?
-    query.values[:joins].blank? && query.values[:distinct].present? && query.values[:order].present? ||
-      query.values[:group].present? && query.values[:order].present?
+    (query.values[:joins].blank? && query.values[:distinct].present? && query.values[:order].present?) ||
+      (query.values[:group].present? && query.values[:order].present?)
   end
 
   def fix_order_select_distinct?
