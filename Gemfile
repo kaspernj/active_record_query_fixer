@@ -6,12 +6,14 @@ source "https://rubygems.org"
 gemspec
 
 group :development, :test do
+  gem "appraisal"
   gem "best_practice_project", require: false
   gem "database_cleaner"
   gem "factory_bot_rails"
   gem "pg"
   gem "pg_query"
   gem "pry-rails"
+  gem "rails", ">= 6.0.0"
   gem "rspec-rails"
   gem "rubocop"
   gem "rubocop-performance"

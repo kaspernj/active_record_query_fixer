@@ -18,6 +18,4 @@ Gem::Specification.new do |s|
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
 
   s.add_dependency "dig_bang"
-  s.add_development_dependency "appraisal"
-  s.add_development_dependency "rails", ">= 6.0.0"
 end
