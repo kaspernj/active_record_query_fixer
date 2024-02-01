@@ -2,6 +2,7 @@
 
 source "https://rubygems.org"
 
+gem "factory_bot", "6.4.5"
 gem "nokogiri", "1.15.5"
 gem "rails", "6.1.4.6"
 
