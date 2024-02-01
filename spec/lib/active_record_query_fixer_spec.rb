@@ -1,11 +1,11 @@
 require "rails_helper"
 
 describe ActiveRecordQueryFixer do
-  let!(:user_1) { create :user }
-  let!(:role_1) { create :role, user: user_1 }
+  let!(:user_1) { create(:user) }
+  let!(:role_1) { create(:role, user: user_1) }
 
-  let!(:user_2) { create :user }
-  let!(:role_2) { create :role, user: user_2 }
+  let!(:user_2) { create(:user) }
+  let!(:role_2) { create(:role, user: user_2) }
 
   describe "#fix_order_group" do
     it "fixes the missing group when ordering" do
@@ -15,13 +15,13 @@ describe ActiveRecordQueryFixer do
 
       expect { query.to_a }.to raise_error(ActiveRecord::StatementInvalid)
 
-      query = ActiveRecordQueryFixer.new(query: query)
+      query = ActiveRecordQueryFixer.new(query:)
         .fix_order_group
         .query
 
       expect(query.to_a).to eq [user_1, user_2]
-      expect(query.to_sql).to eq 'SELECT "users".* FROM "users" INNER JOIN "roles" ON "roles"."user_id" = "users"."id"' \
-        ' GROUP BY "users"."id", "roles"."role" HAVING (COUNT(roles.id) > 0) ORDER BY roles.role'
+      expect(query.to_sql).to eq 'SELECT "users".* FROM "users" INNER JOIN "roles" ON "roles"."user_id" = "users"."id" ' \
+                                 'GROUP BY "users"."id", "roles"."role" HAVING (COUNT(roles.id) > 0) ORDER BY roles.role'
     end
 
     it "works with orders given as an arel object" do
@@ -37,7 +37,7 @@ describe ActiveRecordQueryFixer do
     it "doesnt try to group by sum" do
       query = User.group(:id).order("SuM(id)")
 
-      query = ActiveRecordQueryFixer.new(query: query)
+      query = ActiveRecordQueryFixer.new(query:)
         .fix_order_group
         .query
 
@@ -47,7 +47,7 @@ describe ActiveRecordQueryFixer do
     it "doesnt try to group by count" do
       query = User.group(:id).order("CoUnT(users.id), users.id")
 
-      query = ActiveRecordQueryFixer.new(query: query)
+      query = ActiveRecordQueryFixer.new(query:)
         .fix_order_group
         .query
 
@@ -56,7 +56,7 @@ describe ActiveRecordQueryFixer do
 
     it "doesnt try to match arel objects" do
       query = User.order(User.arel_table[:id].asc)
-      query = ActiveRecordQueryFixer.new(query: query)
+      query = ActiveRecordQueryFixer.new(query:)
         .fix_order_group
         .query
 
@@ -77,13 +77,13 @@ describe ActiveRecordQueryFixer do
 
       expect { query.to_a }.to raise_error(ActiveRecord::StatementInvalid)
 
-      query = ActiveRecordQueryFixer.new(query: query)
+      query = ActiveRecordQueryFixer.new(query:)
         .fix_order_select_distinct
         .query
 
       expect(query.to_a).to eq [user_1, user_2]
       expect(query.to_sql).to eq 'SELECT DISTINCT users.*, roles.role AS active_record_query_fixer_0 FROM "users" ' \
-        'INNER JOIN "roles" ON "roles"."user_id" = "users"."id" ORDER BY roles.role'
+                                 'INNER JOIN "roles" ON "roles"."user_id" = "users"."id" ORDER BY roles.role'
     end
 
     it "doesnt select all columns if something else has been selected" do
@@ -94,12 +94,12 @@ describe ActiveRecordQueryFixer do
 
       expect { query.to_a }.to raise_error(ActiveRecord::StatementInvalid)
 
-      query = ActiveRecordQueryFixer.new(query: query)
+      query = ActiveRecordQueryFixer.new(query:)
         .fix_order_select_distinct
         .query
 
       expect(query.to_sql).to eq 'SELECT DISTINCT "users"."email", roles.role AS active_record_query_fixer_0 FROM "users" ' \
-        'INNER JOIN "roles" ON "roles"."user_id" = "users"."id" ORDER BY roles.role'
+                                 'INNER JOIN "roles" ON "roles"."user_id" = "users"."id" ORDER BY roles.role'
     end
   end
 
@@ -110,17 +110,17 @@ describe ActiveRecordQueryFixer do
         .order("roles.role")
         .distinct
 
-      fixer = ActiveRecordQueryFixer.new(query: query)
+      fixer = ActiveRecordQueryFixer.new(query:)
 
-      expect(fixer.__send__(:fix_order_group?)).to eq false
+      expect(fixer.__send__(:fix_order_group?)).to be false
     end
 
     it "returns true when an order and a group is present" do
       query = User.joins(:roles).group(:id).order("roles.role")
 
-      fixer = ActiveRecordQueryFixer.new(query: query)
+      fixer = ActiveRecordQueryFixer.new(query:)
 
-      expect(fixer.__send__(:fix_order_group?)).to eq true
+      expect(fixer.__send__(:fix_order_group?)).to be true
     end
   end
 
@@ -131,9 +131,9 @@ describe ActiveRecordQueryFixer do
         .order("roles.role")
         .distinct
 
-      fixer = ActiveRecordQueryFixer.new(query: query)
+      fixer = ActiveRecordQueryFixer.new(query:)
 
-      expect(fixer.__send__(:fix_order_select_distinct?)).to eq true
+      expect(fixer.__send__(:fix_order_select_distinct?)).to be true
     end
   end
 
@@ -143,7 +143,7 @@ describe ActiveRecordQueryFixer do
 
       expect { query.to_a }.to raise_error(ActiveRecord::StatementInvalid)
 
-      query = ActiveRecordQueryFixer.new(query: query)
+      query = ActiveRecordQueryFixer.new(query:)
         .fix
         .query
 

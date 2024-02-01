@@ -6,7 +6,7 @@ class ActiveRecordQueryFixer
   attr_reader :query
 
   def self.fix(query)
-    new(query: query).fix.query
+    new(query:).fix.query
   end
 
   def initialize(args)
@@ -98,8 +98,8 @@ class ActiveRecordQueryFixer
 private
 
   def fix_order_group?
-    query.values[:joins].blank? && query.values[:distinct].present? && query.values[:order].present? ||
-      query.values[:group].present? && query.values[:order].present?
+    (query.values[:joins].blank? && query.values[:distinct].present? && query.values[:order].present?) ||
+      (query.values[:group].present? && query.values[:order].present?)
   end
 
   def fix_order_select_distinct?
