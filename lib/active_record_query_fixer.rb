@@ -6,7 +6,7 @@ class ActiveRecordQueryFixer
   attr_reader :query
 
   def self.fix(query)
-    new(query:).fix.query
+    new(query: query).fix.query
   end
 
   def initialize(args)
