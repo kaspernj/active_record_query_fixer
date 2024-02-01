@@ -25,6 +25,7 @@ require_relative "factories/users"
 #
 # Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 
+require "dig_bang"
 require "pg"
 
 # Checks for pending migration and applies them before tests are run.
