@@ -9,7 +9,7 @@ group :development, :test do
   gem "best_practice_project", require: false
   gem "database_cleaner"
   gem "factory_bot_rails"
-  gem "pg"
+  gem "pg", "1.3.0"
   gem "pg_query", "5.1.0"
   gem "pry-rails"
   gem "rspec-rails"
