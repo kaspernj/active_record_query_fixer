@@ -91,12 +91,27 @@ describe "tensorbuzz.yml build paths" do
     expect(claimed_by?(["lib/**"], "lib/active_record_query_fixer/version.rb")).to be(true)
   end
 
+  it "installs the bundle that each build's appraisal actually runs" do
+    builds.each do |build_identifier, build_config|
+      gemfile = build_config.dig("environment", "BUNDLE_GEMFILE")
+      next if gemfile.nil?
+
+      appraisal_name = build_config.fetch("script").join(" ")[/appraisal "([^"]+)"/, 1]
+
+      expect(appraisal_name).not_to be_nil, "builds.#{build_identifier} sets BUNDLE_GEMFILE without an appraisal"
+      expected_gemfile = "/home/build/project/gemfiles/#{appraisal_name.tr(" ", "_")}.gemfile"
+
+      expect(gemfile).to eq(expected_gemfile),
+        "builds.#{build_identifier} installs #{gemfile} but runs the #{appraisal_name.inspect} appraisal"
+    end
+  end
+
   it "runs exactly the builds that the changed paths belong to" do
     deliveries = [
       [["Gemfile.lock"], ["build_5"]],
       [["Gemfile", "Gemfile.lock"], ["build_5"]],
       [["gemfiles/ruby_2_rails_6.gemfile.lock"], ["build_1"]],
-      [["gemfiles/ruby_2_rails_7.gemfile.lock"], ["build_2", "build_4"]],
+      [["gemfiles/ruby_2_rails_7.gemfile.lock"], ["build_2"]],
       [["gemfiles/ruby_3_rails_6.gemfile"], ["build_3"]],
       [["gemfiles/ruby_3_rails_7.gemfile.lock"], ["build_4"]],
       [["Appraisals"], ["build_1", "build_2", "build_3", "build_4"]],

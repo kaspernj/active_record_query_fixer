@@ -65,7 +65,7 @@ builds:
       - bundle exec appraisal "ruby 3 rails 6" rspec
   build_4:
     environment:
-      BUNDLE_GEMFILE: /home/build/project/gemfiles/ruby_2_rails_7.gemfile
+      BUNDLE_GEMFILE: /home/build/project/gemfiles/ruby_3_rails_7.gemfile
       RUBY_VERSION: 3.2.2
     name: Ruby 3.2.2, Rails 7
     paths:
@@ -76,9 +76,6 @@ builds:
       - "lib/**"
       - "spec/**"
       - "!spec/dummy/log/**"
-      # BUNDLE_GEMFILE installs the ruby_2_rails_7 bundle, the appraisal runs the ruby_3_rails_7 one.
-      - "gemfiles/ruby_2_rails_7.gemfile"
-      - "gemfiles/ruby_2_rails_7.gemfile.lock"
       - "gemfiles/ruby_3_rails_7.gemfile"
       - "gemfiles/ruby_3_rails_7.gemfile.lock"
     script:
